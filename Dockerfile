@@ -1,3 +1,4 @@
+# FROM centos:7.6.1810
 FROM centos:7.3.1611
 
 ARG RELEASE_VERSION="2.6.1"
@@ -9,21 +10,21 @@ ARG RELEASE_VERSION="2.6.1"
 # - Install supervisor-stdout to allow output of services started by
 #  supervisord to be easily inspected with "docker logs".
 # ------------------------------------------------------------------------------
-RUN rpm --rebuilddb \
-	&& rpm --import \
-		http://mirror.centos.org/centos/RPM-GPG-KEY-CentOS-7 \
-	&& rpm --import \
-		https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7 \
-	&& rpm --import \
-		https://dl.iuscommunity.org/pub/ius/IUS-COMMUNITY-GPG-KEY \
-	&& yum -y install \
+RUN rpm --rebuilddb 
+RUN  rpm --import \
+		http://mirror.centos.org/centos/RPM-GPG-KEY-CentOS-7 
+RUN  rpm --import \
+		https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7 
+RUN  rpm --import \
+		https://dl.iuscommunity.org/pub/ius/IUS-COMMUNITY-GPG-KEY 
+RUN yum -y install \
 			--setopt=tsflags=nodocs \
 			--disableplugin=fastestmirror \
 		centos-release-scl \
 		centos-release-scl-rh \
 		epel-release \
-		https://centos7.iuscommunity.org/ius-release.rpm \
-	&& yum -y install \
+		https://centos7.iuscommunity.org/ius-release.rpm 
+RUN yum -y install \
 			--setopt=tsflags=nodocs \
 			--disableplugin=fastestmirror \
 		inotify-tools-3.14-8.el7 \
@@ -32,26 +33,28 @@ RUN rpm --rebuilddb \
 		openssl-1.0.2k-19.el7 \
 		python-setuptools-0.9.8-7.el7 \
 		sudo-1.8.23-4.el7 \
-		yum-plugin-versionlock-1.1.31-52.el7 \
-	&& yum versionlock add \
+		yum-plugin-versionlock-1.1.31-54.el7_8
+		# DML yum-plugin-versionlock-1.1.31-52.el7 \
+		# yum-plugin-versionlock-1.1.31-52.el7 
+RUN  yum versionlock add \
 		inotify-tools \
 		openssh \
 		openssh-server \
 		openssh-clients \
 		python-setuptools \
 		sudo \
-		yum-plugin-versionlock \
-	&& yum clean all \
-	&& easy_install \
+		yum-plugin-versionlock 
+RUN  yum clean all 
+RUN  easy_install \
 		'supervisor == 4.0.4' \
-		'supervisor-stdout == 0.1.1' \
-	&& mkdir -p \
-		/var/log/supervisor/ \
-	&& rm -rf /etc/ld.so.cache \
-	&& rm -rf /sbin/sln \
-	&& rm -rf /usr/{{lib,share}/locale,share/{man,doc,info,cracklib,i18n},{lib,lib64}/gconv,bin/localedef,sbin/build-locale-archive} \
-	&& rm -rf /{root,tmp,var/cache/{ldconfig,yum}}/* \
-	&& > /etc/sysconfig/i18n
+		'supervisor-stdout == 0.1.1' 
+RUN  mkdir -p \
+		/var/log/supervisor/ 
+RUN  rm -rf /etc/ld.so.cache 
+RUN  rm -rf /sbin/sln 
+RUN  rm -rf /usr/{{lib,share}/locale,share/{man,doc,info,cracklib,i18n},{lib,lib64}/gconv,bin/localedef,sbin/build-locale-archive} 
+RUN  rm -rf /{root,tmp,var/cache/{ldconfig,yum}}/* \
+  > /etc/sysconfig/i18n
 
 # ------------------------------------------------------------------------------
 # Copy files into place
