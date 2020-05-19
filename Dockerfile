@@ -27,12 +27,14 @@ RUN yum -y install \
 RUN yum -y install \
 			--setopt=tsflags=nodocs \
 			--disableplugin=fastestmirror \
-		inotify-tools-3.14-8.el7 \
+		# inotify-tools-3.14-8.el7 \
+		inotify-tools-3.14-9.el7 \
 		openssh-clients-7.4p1-21.el7 \
 		openssh-server-7.4p1-21.el7 \
 		openssl-1.0.2k-19.el7 \
 		python-setuptools-0.9.8-7.el7 \
-		sudo-1.8.23-4.el7 \
+		# sudo-1.8.23-4.el7 \
+		sudo-1.8.23-9.el7 \
 		yum-plugin-versionlock-1.1.31-54.el7_8
 		# DML yum-plugin-versionlock-1.1.31-52.el7 \
 		# yum-plugin-versionlock-1.1.31-52.el7 
@@ -72,25 +74,25 @@ ADD src /
 # ------------------------------------------------------------------------------
 RUN ln -sf \
 		/usr/share/zoneinfo/UTC \
-		/etc/localtime \
-	&& echo "NETWORKING=yes" \
-		> /etc/sysconfig/network \
-	&& sed -i \
+		/etc/localtime 
+RUN  echo "NETWORKING=yes" \
+		> /etc/sysconfig/network 
+RUN  sed -i \
 		-e 's~^PasswordAuthentication yes~PasswordAuthentication no~g' \
 		-e 's~^#PermitRootLogin yes~PermitRootLogin no~g' \
 		-e 's~^#UseDNS yes~UseDNS no~g' \
 		-e 's~^\(.*\)/usr/libexec/openssh/sftp-server$~\1internal-sftp~g' \
-		/etc/ssh/sshd_config \
-	&& sed -i \
+		/etc/ssh/sshd_config 
+RUN  sed -i \
 		-e 's~^# %wheel\tALL=(ALL)\tALL~%wheel\tALL=(ALL) ALL~g' \
 		-e 's~\(.*\) requiretty$~#\1requiretty~' \
-		/etc/sudoers \
-	&& sed -i \
+		/etc/sudoers 
+RUN  sed -i \
 		-e "s~{{RELEASE_VERSION}}~${RELEASE_VERSION}~g" \
-		/etc/systemd/system/centos-ssh@.service \
-	&& chmod 644 \
-		/etc/{supervisord.conf,supervisord.d/{20-sshd-bootstrap,50-sshd-wrapper}.conf} \
-	&& chmod 700 \
+		/etc/systemd/system/centos-ssh@.service 
+RUN  chmod 644 \
+		/etc/{supervisord.conf,supervisord.d/{20-sshd-bootstrap,50-sshd-wrapper}.conf} 
+RUN  chmod 700 \
 		/usr/{bin/healthcheck,sbin/{scmi,sshd-{bootstrap,wrapper},system-{timezone,timezone-wrapper}}}
 
 EXPOSE 22
